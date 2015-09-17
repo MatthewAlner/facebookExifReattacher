@@ -10,7 +10,7 @@ def parse_options()
     options = {}
 
     optparse = OptionParser.new do |opts|
-        opts.banner = "Usage: example.rb [options]"
+        opts.banner = "Usage: facebookEcifReattacher.rb [options]"
 
         opts.on("-v", "--[no-]verbose", "Run verbosely") do |v|
             options[:verbose] = v
@@ -180,7 +180,6 @@ parse_options
 process_facebok_data_dump($PATH)
 
 ###TODO###
-# Need to make the root dir passinable
 # Need to add progress and counters
 # Need keep and print list of non updated images
 # Final count of createdDate vs Posted vs Not updated
