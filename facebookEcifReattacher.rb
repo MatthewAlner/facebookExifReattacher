@@ -37,9 +37,11 @@ def parse_options()
     if !options[:dry_run].nil? then $DRY_RUN = options[:dry_run] end
     if !options[:path].nil? then $PATH = options[:path] end
 
-    puts "Verbose: " + $DEBUG.to_s
-    puts "Dry run: " + $DRY_RUN.to_s
-    puts "Path: " + $PATH.to_s
+    if($DEBUG)
+        puts "Verbose: " + $DEBUG.to_s
+        puts "Dry run: " + $DRY_RUN.to_s
+        puts "Path: " + $PATH.to_s
+    end
 
     check_for_missing_options(optparse, options)
 end
@@ -62,12 +64,12 @@ end
 
 class Image
     attr_accessor :name
-    attr_accessor :dateCreated
-    attr_accessor :datePosted
-    def initialize(name, dateCreated, datePosted)
+    attr_accessor :date_created
+    attr_accessor :date_posted
+    def initialize(name, date_created, date_posted)
         @name = name
-        @dateCreated = dateCreated
-        @datePosted = datePosted
+        @date_created = date_created
+        @date_posted = date_posted
     end
 end
 
@@ -84,25 +86,25 @@ def get_exif_data_from_folders_index_file(folder_path)
     regex = /photos\/\d+\/(\d+).jpg(?:.+?)<div class="meta">(.+?)<\/div>(<table class="meta">(?:.+?)<\/table>)?/
     images_exif_data = []
 
-    index_file_contents.scan(regex) do |name, datePosted, exifTable|
+    index_file_contents.scan(regex) do |name, date_posted, exifTable|
         name = name + ".jpg"
-        datePosted = DateTime.parse(datePosted)
+        date_posted = DateTime.parse(date_posted)
         if exifTable.is_a? String
-            dateCreatedUnixString = get_exif_out_of_table(exifTable)
-            if !dateCreatedUnixString.empty? then
-                dateCreated = Time.at(dateCreatedUnixString.to_i).to_datetime
+            date_created_unix_string = get_exif_out_of_table(exifTable)
+            if !date_created_unix_string.empty? then
+                date_created = Time.at(date_created_unix_string.to_i).to_datetime
             end
         else
             imgToStore = false
         end
         if $DEBUG
             puts "name: \t\t" + name
-            puts "datePosted: \t" + datePosted.to_s
-            puts "dateCreated: \t" + dateCreated.to_s
+            puts "date_posted: \t" + date_posted.to_s
+            puts "date_created: \t" + date_created.to_s
             puts "\n"
         end
 
-        imgToStore = Image.new(name, dateCreated, datePosted)
+        imgToStore = Image.new(name, date_created, date_posted)
         images_exif_data.push(imgToStore)
     end
         images_exif_data
@@ -110,13 +112,13 @@ end
 
 def get_exif_out_of_table(table)
     regex = /<th>(.*?)<\/th><td>(.*?)<\/td>/
-    dateCreated = ""
+    date_created = ""
     table.scan(regex) do |key, value|
         if key == "Taken" then
-            dateCreated = value
+            date_created = value
         end
     end
-    dateCreated
+    date_created
 end
 
 def get_images_from_folder(folder_path)
@@ -146,14 +148,14 @@ def update_images_with_correct_exif_data(images_exif_data, images_names_only, fo
 end
 
 def modify_images_created_date(image_name, image_data, folder_path)
-    if image_data.dateCreated
-        new_time = image_data.dateCreated.strftime("%Y:%m:%d %T")
+    if image_data.date_created
+        new_time = image_data.date_created.strftime("%Y:%m:%d %T")
         image_to_update = MiniExiftool.new(folder_path + "/" + image_name)
         image_to_update.date_time_original = new_time
         image_to_update.save
         puts "updated: #{image_name} \t > using CREATED date \t > #{new_time}"
     else
-        new_time = image_data.datePosted.strftime("%Y:%m:%d %T")
+        new_time = image_data.date_posted.strftime("%Y:%m:%d %T")
         image_to_update = MiniExiftool.new(folder_path + "/" + image_name)
         image_to_update.date_time_original = new_time
         image_to_update.save
