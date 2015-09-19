@@ -180,13 +180,3 @@ end
 
 parse_options
 process_facebok_data_dump($PATH)
-
-###TODO###
-# Need to add progress and counters
-# Need keep and print list of non updated images
-# Final count of createdDate vs Posted vs Not updated
-# option to copy or move to another folder
-# captue more of the exif data
-# update files created date as well as the exif data
-# renaming files with date stamp
-# renaming files back to orig name or facebook name
