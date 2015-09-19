@@ -14,9 +14,9 @@ This Ruby script scrapes the index.htm files and updates the downloaded photos "
   * https://www.facebook.com/help/131112897028467/
 * This ruby script
 
-## Use
+## Usage
 
-Usage: example.rb [options]
+$ facebookExifReattacher.rb [options]
 
 | Short | Long           | Description
 | ------|--------------- | --------------------
